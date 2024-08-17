@@ -40,9 +40,6 @@ import org.apache.kafka.common.requests.FetchRequest;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.raft.errors.BufferAllocationException;
 import org.apache.kafka.raft.errors.NotLeaderException;
-import org.apache.kafka.raft.internals.ReplicaKey;
-import org.apache.kafka.raft.internals.VoterSet;
-import org.apache.kafka.raft.internals.VoterSetTest;
 import org.apache.kafka.test.TestUtils;
 
 import org.junit.jupiter.api.Test;
@@ -72,6 +69,9 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 import static org.apache.kafka.raft.RaftClientTestContext.Builder.DEFAULT_ELECTION_TIMEOUT_MS;
 import static org.apache.kafka.test.TestUtils.assertFutureThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.in;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -796,7 +796,7 @@ public class KafkaRaftClientTest {
         context.pollUntilRequest();
 
         RaftRequest.Outbound fetchRequest = context.assertSentFetchRequest();
-        assertTrue(voters.contains(fetchRequest.destination().id()));
+        assertThat(fetchRequest.destination().id(), is(in(voters)));
         context.assertFetchRequestData(fetchRequest, 0, 0L, 0);
 
         context.deliverResponse(
@@ -1787,7 +1787,7 @@ public class KafkaRaftClientTest {
 
         context.pollUntilRequest();
         RaftRequest.Outbound fetchRequest = context.assertSentFetchRequest();
-        assertTrue(voters.contains(fetchRequest.destination().id()));
+        assertThat(fetchRequest.destination().id(), is(in(voters)));
         context.assertFetchRequestData(fetchRequest, 0, 0L, 0);
 
         context.deliverResponse(
@@ -1813,7 +1813,7 @@ public class KafkaRaftClientTest {
             .collect(Collectors.toList());
 
         RaftClientTestContext context = new RaftClientTestContext.Builder(localId, voters)
-            .withBootstrapServers(bootstrapServers)
+            .withBootstrapServers(Optional.of(bootstrapServers))
             .withKip853Rpc(withKip853Rpc)
             .build();
 
@@ -1860,7 +1860,7 @@ public class KafkaRaftClientTest {
             .collect(Collectors.toList());
 
         RaftClientTestContext context = new RaftClientTestContext.Builder(localId, voters)
-            .withBootstrapServers(bootstrapServers)
+            .withBootstrapServers(Optional.of(bootstrapServers))
             .withKip853Rpc(withKip853Rpc)
             .build();
 
@@ -1903,7 +1903,7 @@ public class KafkaRaftClientTest {
             .collect(Collectors.toList());
 
         RaftClientTestContext context = new RaftClientTestContext.Builder(localId, voters)
-            .withBootstrapServers(bootstrapServers)
+            .withBootstrapServers(Optional.of(bootstrapServers))
             .withKip853Rpc(withKip853Rpc)
             .build();
 
@@ -1977,7 +1977,7 @@ public class KafkaRaftClientTest {
             .collect(Collectors.toList());
 
         RaftClientTestContext context = new RaftClientTestContext.Builder(localId, voters)
-            .withBootstrapServers(bootstrapServers)
+            .withBootstrapServers(Optional.of(bootstrapServers))
             .withKip853Rpc(withKip853Rpc)
             .build();
 
@@ -2634,7 +2634,7 @@ public class KafkaRaftClientTest {
             .collect(Collectors.toList());
 
         RaftClientTestContext context = new RaftClientTestContext.Builder(localId, voters)
-            .withBootstrapServers(bootstrapServers)
+            .withBootstrapServers(Optional.of(bootstrapServers))
             .withKip853Rpc(withKip853Rpc)
             .build();
 
@@ -2685,7 +2685,7 @@ public class KafkaRaftClientTest {
             .collect(Collectors.toList());
 
         RaftClientTestContext context = new RaftClientTestContext.Builder(localId, voters)
-            .withBootstrapServers(bootstrapServers)
+            .withBootstrapServers(Optional.of(bootstrapServers))
             .withKip853Rpc(withKip853Rpc)
             .build();
 
@@ -4211,7 +4211,7 @@ public class KafkaRaftClientTest {
             .collect(Collectors.toList());
 
         RaftClientTestContext context = new RaftClientTestContext.Builder(OptionalInt.empty(), voters)
-            .withBootstrapServers(bootstrapServers)
+            .withBootstrapServers(Optional.of(bootstrapServers))
             .withKip853Rpc(withKip853Rpc)
             .build();
 

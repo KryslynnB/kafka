@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.kafka.raft.internals;
+package org.apache.kafka.raft;
 
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.Uuid;
@@ -22,7 +22,6 @@ import org.apache.kafka.common.feature.SupportedVersionRange;
 import org.apache.kafka.common.message.VotersRecord;
 import org.apache.kafka.common.network.ListenerName;
 import org.apache.kafka.common.utils.Utils;
-import org.apache.kafka.raft.Endpoints;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -49,11 +48,7 @@ import java.util.stream.Stream;
 public final class VoterSet {
     private final Map<Integer, VoterNode> voters;
 
-    VoterSet(Map<Integer, VoterNode> voters) {
-        if (voters.isEmpty()) {
-            throw new IllegalArgumentException("Voters cannot be empty");
-        }
-
+    private VoterSet(Map<Integer, VoterNode> voters) {
         this.voters = voters;
     }
 
@@ -408,6 +403,11 @@ public final class VoterSet {
         ) {
             return new VoterNode(voterKey, listeners, supportedKRaftVersion);
         }
+    }
+
+    private static final VoterSet EMPTY = new VoterSet(Collections.emptyMap());
+    public static VoterSet empty() {
+        return EMPTY;
     }
 
     /**
